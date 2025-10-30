@@ -1,7 +1,7 @@
 // components/Header.jsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Constants from 'expo-constants'; // Nodig om de statusbalk te vermijden
+import Constants from 'expo-constants'; 
 
 const Header = () => (
     <View style={styles.header}>

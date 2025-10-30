@@ -1,67 +1,66 @@
-// data/pokemon.js
-
+// data/Pokemon.js
 export const POKEMON_DATA = [
     { 
-        pokedex_index: "001", 
+        pokedex_index: 1, 
         name: "bulbasaur", 
         type_1: "Grass", 
         type_2: "Poison", 
-        description: "Een Pokémon die een zaadje op zijn rug draagt vanaf de geboorte."
+        description: "Een zaadje zit op zijn rug sinds zijn geboorte."
     },
     { 
-        pokedex_index: "002", 
+        pokedex_index: 2, 
         name: "ivysaur", 
         type_1: "Grass", 
         type_2: "Poison", 
-        description: "Wanneer de knop op zijn rug groter wordt, wordt het moeilijk om op twee benen te staan."
+        description: "De knop op zijn rug wordt groter als hij evolueert."
     },
     { 
-        pokedex_index: "003", 
+        pokedex_index: 3, 
         name: "venusaur", 
         type_1: "Grass", 
         type_2: "Poison", 
-        description: "De bloem op zijn rug bloeit wanneer deze veel zonlicht absorbeert. Het is de evolutionaire top."
+        description: "De bloem op zijn rug bloeit in zonlicht."
     },
     { 
-        pokedex_index: "004", 
+        pokedex_index: 4, 
         name: "charmander", 
         type_1: "Fire", 
         type_2: "None", 
-        description: "De vlam op zijn staart brandt zolang deze Pokémon gezond is."
+        description: "De vlam op zijn staart brandt zolang hij gezond is."
     },
     { 
-        pokedex_index: "005", 
+        pokedex_index: 5, 
         name: "charmeleon", 
         type_1: "Fire", 
         type_2: "None", 
-        description: "Het heeft een wreed karakter en zal zijn vijanden meedogenloos verscheuren met zijn scherpe klauwen."
+        description: "Het heeft een wreed karakter en gebruikt zijn klauwen."
     },
     { 
-        pokedex_index: "006", 
+        pokedex_index: 6, 
         name: "charizard", 
         type_1: "Fire", 
         type_2: "Flying", 
-        description: "Zijn vurige adem kan stenen doen smelten. Het is berucht om het veroorzaken van bosbranden."
+        description: "Zijn vurige adem kan stenen doen smelten."
     },
     { 
-        pokedex_index: "007", 
+        pokedex_index: 7, 
         name: "squirtle", 
         type_1: "Water", 
         type_2: "None", 
-        description: "Wanneer het zijn nek in zijn schild terugtrekt, spuit het water uit zijn mond met grote kracht."
+        description: "Hij trekt zijn nek in zijn schild terug om water te spuiten."
     },
     { 
-        pokedex_index: "008", 
+        pokedex_index: 8, 
         name: "wartortle", 
         type_1: "Water", 
         type_2: "None", 
-        description: "Het wordt vaak afgebeeld op schilderijen als een symbool van een lang leven."
+        description: "Het wordt gezien als een symbool van een lang leven."
     },
     { 
-        pokedex_index: "009", 
+        pokedex_index: 9, 
         name: "blastoise", 
         type_1: "Water", 
         type_2: "None", 
-        description: "De waterstralen die uit de kanonnen op zijn schild worden gespoten, kunnen staal doorboren."
+        description: "De waterstralen die uit zijn schild worden gespoten, kunnen staal doorboren."
     },
 ];

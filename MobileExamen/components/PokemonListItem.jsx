@@ -1,39 +1,52 @@
 // components/PokemonListItem.jsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const getTypeColor = (type) => {
   const colors = {
     'Grass': '#7AC74C', 'Fire': '#EE8130', 'Water': '#6390F0',
-    'Poison': '#A33EA1', 'Electric': '#F7D02C', 'None': '#ccc',
+    'Poison': '#A33EA1', 'Flying': '#A98FF3', 'Electric': '#F7D02C', 'None': '#ccc',
   };
   return colors[type] || '#68A090';
 };
 
-const PokemonListItem = ({ pokemon, navigation }) => { // <-- Ontvang 'navigation'
+const PokemonListItem = ({ pokemon, navigation, isFavorite, onToggleFavorite }) => { 
   return (
     <TouchableOpacity 
       style={styles.listItem}
-      // Navigeer naar de Stack Screen
       onPress={() => navigation.navigate('PokemonDetails', { pokemonData: pokemon })} 
     >
-      <View style={styles.textContainer}>
-        <Text style={styles.indexText}>#{pokemon.pokedex_index}</Text>
-        <Text style={styles.nameText}>
-          {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
-        </Text>
-      </View>
+      <View style={styles.infoArea}>
+          <View style={styles.textContainer}>
+            <Text style={styles.indexText}>#{pokemon.pokedex_index}</Text>
+            <Text style={styles.nameText}>
+              {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+            </Text>
+          </View>
 
-      <View style={styles.tagContainer}>
-        <Text style={[styles.typeTag, { backgroundColor: getTypeColor(pokemon.type_1) }]}>
-          {pokemon.type_1}
-        </Text>
-        {pokemon.type_2 !== 'None' && (
-          <Text style={[styles.typeTag, { backgroundColor: getTypeColor(pokemon.type_2) }]}>
-            {pokemon.type_2}
-          </Text>
-        )}
-      </View>
+          <View style={styles.tagContainer}>
+            <Text style={[styles.typeTag, { backgroundColor: getTypeColor(pokemon.type_1) }]}>
+              {pokemon.type_1}
+            </Text>
+            {pokemon.type_2 !== 'None' && (
+              <Text style={[styles.typeTag, { backgroundColor: getTypeColor(pokemon.type_2) }]}>
+                {pokemon.type_2}
+              </Text>
+            )}
+          </View>
+        </View>
+        
+        <TouchableOpacity 
+            onPress={onToggleFavorite} 
+            style={styles.favoriteButton}
+        >
+            <MaterialCommunityIcons 
+                name={isFavorite ? "star" : "star-outline"}
+                size={24} 
+                color={isFavorite ? "#FFD700" : "#A98FF3"}
+            />
+        </TouchableOpacity>
     </TouchableOpacity>
   );
 };
@@ -54,6 +67,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
+  },
+  infoArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
+  favoriteButton: {
+      paddingLeft: 10,
   },
   textContainer: {
     flexDirection: 'row',

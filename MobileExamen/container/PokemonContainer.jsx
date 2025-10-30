@@ -1,11 +1,12 @@
 // container/PokemonContainer.jsx
+
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { POKEMON_DATA } from '../data/Pokemon'; 
 import Header from '../components/Header';
 import PokemonListItem from '../components/PokemonListItem';
 
-const PokemonContainer = ({ navigation }) => { // <-- Ontvang 'navigation'
+const PokemonContainer = ({ favoriteIndices, toggleFavorite }) => {
   const [pokemonList] = useState(POKEMON_DATA); 
 
   useEffect(() => {
@@ -23,7 +24,8 @@ const PokemonContainer = ({ navigation }) => { // <-- Ontvang 'navigation'
           <PokemonListItem 
             key={pokemon.pokedex_index} 
             pokemon={pokemon}
-            navigation={navigation} // <-- Geef 'navigation' door
+            isFavorite={favoriteIndices.includes(pokemon.pokedex_index)} 
+            onToggleFavorite={() => toggleFavorite(pokemon.pokedex_index)} 
           />
         ))}
 
