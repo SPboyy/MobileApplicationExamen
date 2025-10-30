@@ -8,39 +8,11 @@ export const POKEMON_DATA = [
         description: "Een zaadje zit op zijn rug sinds zijn geboorte."
     },
     { 
-        pokedex_index: 2, 
-        name: "ivysaur", 
-        type_1: "Grass", 
-        type_2: "Poison", 
-        description: "De knop op zijn rug wordt groter als hij evolueert."
-    },
-    { 
-        pokedex_index: 3, 
-        name: "venusaur", 
-        type_1: "Grass", 
-        type_2: "Poison", 
-        description: "De bloem op zijn rug bloeit in zonlicht."
-    },
-    { 
         pokedex_index: 4, 
         name: "charmander", 
         type_1: "Fire", 
         type_2: "None", 
         description: "De vlam op zijn staart brandt zolang hij gezond is."
-    },
-    { 
-        pokedex_index: 5, 
-        name: "charmeleon", 
-        type_1: "Fire", 
-        type_2: "None", 
-        description: "Het heeft een wreed karakter en gebruikt zijn klauwen."
-    },
-    { 
-        pokedex_index: 6, 
-        name: "charizard", 
-        type_1: "Fire", 
-        type_2: "Flying", 
-        description: "Zijn vurige adem kan stenen doen smelten."
     },
     { 
         pokedex_index: 7, 
@@ -50,17 +22,45 @@ export const POKEMON_DATA = [
         description: "Hij trekt zijn nek in zijn schild terug om water te spuiten."
     },
     { 
-        pokedex_index: 8, 
-        name: "wartortle", 
-        type_1: "Water", 
+        pokedex_index: 25, 
+        name: "pikachu", 
+        type_1: "Electric", 
         type_2: "None", 
-        description: "Het wordt gezien als een symbool van een lang leven."
+        description: "Hij laadt zichzelf op met elektriciteit."
     },
     { 
-        pokedex_index: 9, 
-        name: "blastoise", 
+        pokedex_index: 10, 
+        name: "caterpie", 
+        type_1: "Bug", 
+        type_2: "None", 
+        description: "Een rups met een schattige verschijning."
+    },
+    { 
+        pokedex_index: 129, 
+        name: "magikarp", 
         type_1: "Water", 
         type_2: "None", 
-        description: "De waterstralen die uit zijn schild worden gespoten, kunnen staal doorboren."
+        description: "Beroemd om alleen maar te spatten."
+    },
+    { 
+        pokedex_index: 151, 
+        name: "mew", 
+        type_1: "Psychic", 
+        type_2: "None", 
+        description: "Een mystieke en zeldzame Pokémon."
+    },
+    { 
+        pokedex_index: 149, 
+        name: "dragonite", 
+        type_1: "Dragon", 
+        type_2: "Flying", 
+        description: "Een zeldzame zeebewoner met de intelligentie van een mens."
+    },
+    { 
+        pokedex_index: 94, 
+        name: "gengar", 
+        type_1: "Ghost", 
+        type_2: "Poison", 
+        description: "Verschijnt graag in donkere schaduwen."
     },
 ];
