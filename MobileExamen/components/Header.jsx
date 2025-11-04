@@ -1,4 +1,3 @@
-// components/Header.jsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants'; 
@@ -9,14 +8,9 @@ const Header = () => {
     return (
         <View style={styles.headerContainer}>
             <Text style={styles.titleText}>Pokémon Lijst</Text>
-            <TouchableOpacity 
-                style={styles.profileButton}
-                onPress={() => {
-                    navigation.navigate('Profile'); 
-                }}
-            >
-                <Text style={styles.profileText}>👤</Text> 
-            </TouchableOpacity>
+            <View style={styles.profileButton}>
+                <Text style={styles.profileText}>  P </Text> 
+            </View>
         </View>
     );
 };
@@ -44,6 +38,7 @@ const styles = StyleSheet.create({
     },
     profileText: {
         fontSize: 28, 
+        color: '#fff' 
     },
 });
 

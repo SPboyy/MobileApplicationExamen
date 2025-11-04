@@ -1,62 +1,52 @@
 // App.js
 import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import Constants from 'expo-constants'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-// Importeer uw containers (Zorg dat ze 'export default' gebruiken)
-import PokemonContainer from './container/PokemonContainer'; 
-import ProfileContainer from './container/ProfileContainer'; 
-import PokemonDetailsScreen from './container/PokemonDetails'; 
+import PokemonContainer from './container/PokemonContainer';
+import ProfileContainer from './container/ProfileContainer';
+import PokemonDetailsScreen from './container/PokemonDetails';
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
+const initialLayout = { width: Dimensions.get('window').width };
 
-// --- 1. DEFINIEER DE TABS COMPONENT ---
-// Dit component beheert de Bottom Tabs (Home en Profile)
-// Het ontvangt de state (favorieten) van de App component
-const TabsComponent = ({ favoriteIndices, toggleFavorite }) => {
+// --- 1. DE STACK NAVIGATOR (VOOR HOME TAB) ---
+// Deze beheert de Lijst -> Details flow
+const HomeStackNavigator = ({ favoriteIndices, toggleFavorite }) => {
     return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                tabBarActiveTintColor: '#FF0000',
-                tabBarInactiveTintColor: 'gray',
-                headerShown: false, // De Header zit al in PokemonContainer
-                tabBarIcon: ({ color, size }) => {
-                    let iconName = route.name === 'Home' ? 'pokeball' : 'account-circle';
-                    return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
-                }
-            })}
-        >
-            {/* Home Tab: Rendert de container en geeft de state door */}
-            <Tab.Screen name="Home" options={{ title: 'Lijst' }}>
+        <HomeStack.Navigator>
+            <HomeStack.Screen 
+                name="PokemonList" 
+                options={{ headerShown: false }}
+            >
                 {(props) => (
                     <PokemonContainer 
-                        {...props}
-                        favoriteIndices={favoriteIndices}
+                        {...props} 
+                        favoriteIndices={favoriteIndices} 
                         toggleFavorite={toggleFavorite}
                     />
                 )}
-            </Tab.Screen>
-            
-            {/* Profile Tab: Rendert de container en geeft de state door */}
-            <Tab.Screen name="Profile" options={{ title: 'Profiel' }}>
-                 {(props) => (
-                    <ProfileContainer 
-                        {...props}
-                        shinyCount={favoriteIndices.length}
-                    />
-                )}
-            </Tab.Screen>
-        </Tab.Navigator>
+            </HomeStack.Screen>
+            <HomeStack.Screen 
+                name="PokemonDetails" 
+                component={PokemonDetailsScreen} 
+                options={({ route }) => ({ 
+                    title: route.params?.pokemonData?.name.toUpperCase() || 'DETAILS',
+                    headerShown: true
+                })}
+            />
+        </HomeStack.Navigator>
     );
 };
 
-// --- 2. DEFINIEER DE ROOT APP (STACK NAVIGATOR) ---
+
+// --- 2. DE HOOFD TAB NAVIGATOR (STABIELE VERSIE) ---
 export default function App() {
-  // De state (favorieten) leeft nu in de Root (App.js)
+  const [index, setIndex] = React.useState(0);
   const [favoriteIndices, setFavoriteIndices] = React.useState([]); 
   
   const toggleFavorite = (index) => {
@@ -69,36 +59,55 @@ export default function App() {
     });
   };
   
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        
-        {/* Scherm 1: De Tabs Component (Verbergt de Stack Header) */}
-        <Stack.Screen 
-          name="HomeTabs"
-          options={{ headerShown: false }}
-        >
-          {/* Geef de state en de functie door aan de TabsComponent */}
-          {(props) => (
-            <TabsComponent 
-              {...props}
-              favoriteIndices={favoriteIndices}
-              toggleFavorite={toggleFavorite}
+  const [routes] = React.useState([
+    { key: 'home', title: 'Lijst' },
+    { key: 'profile', title: 'Profiel' },
+  ]);
+  
+  // Render Scene Functie
+  const renderScene = ({ route }) => {
+    switch (route.key) {
+      case 'home':
+        // De Home tab bevat de volledige Stack Navigatie
+        return (
+            <NavigationContainer independent={true}>
+                <HomeStackNavigator 
+                    favoriteIndices={favoriteIndices} 
+                    toggleFavorite={toggleFavorite} 
+                />
+            </NavigationContainer>
+        );
+      case 'profile':
+        return (
+            <ProfileContainer 
+                shinyCount={favoriteIndices.length}
             />
-          )}
-        </Stack.Screen>
+        );
+      default:
+        return null;
+    }
+  };
 
-        {/* Scherm 2: De Details Pagina (Toont de Stack Header) */}
-        <Stack.Screen 
-          name="PokemonDetails" 
-          component={PokemonDetailsScreen} 
-          options={({ route }) => ({ 
-            title: route.params?.pokemonData?.name.toUpperCase() || 'DETAILS',
-            headerShown: true // Toont de 'terug' knop
-          })}
-        />
-
-      </Stack.Navigator>
-    </NavigationContainer>
+  const renderTabBar = props => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: 'white' }}
+      style={{ backgroundColor: '#FF0000', paddingTop: Constants.statusBarHeight }}
+      labelStyle={{ fontWeight: 'bold' }}
+      renderIcon={({ route, focused, color }) => {
+        let iconName = route.key === 'home' ? 'pokeball' : 'account-circle';
+        return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
+      }}
+    />
   );
-};
+
+  return (
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      renderTabBar={renderTabBar}
+      onIndexChange={setIndex}
+      initialLayout={initialLayout}
+    />
+  );
+}
