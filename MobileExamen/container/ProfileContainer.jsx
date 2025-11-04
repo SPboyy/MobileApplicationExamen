@@ -1,4 +1,3 @@
-// container/ProfileContainer.jsx
 import * as React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -10,7 +9,6 @@ const ProfileContainer = ({ shinyCount }) => {
 
   return (
     <View style={styles.profileContainer}>
-      {/* 👇 Nieuw: Pokébal logo */}
       <MaterialCommunityIcons
         name="pokeball"
         size={80}
@@ -38,7 +36,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-  // 👇 Nieuw: ruimte boven icoon
   pokeballIcon: {
     marginTop: 60,
     marginBottom: 20,
