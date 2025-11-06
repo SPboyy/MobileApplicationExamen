@@ -1,111 +1,60 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const getTypeColor = (type) => {
   const colors = {
-    'Grass': '#7AC74C', 'Fire': '#EE8130', 'Water': '#6390F0',
-    'Poison': '#A33EA1', 'Flying': '#A98FF3', 'Electric': '#F7D02C', 'None': '#ccc',
-    'Bug': '#A6B91A', 'Ghost': '#735797', 'Dragon': '#6F35FC', 'Psychic': '#F95587'
+    Grass: '#7AC74C', Fire: '#EE8130', Water: '#6390F0',
+    Poison: '#A33EA1', Flying: '#A98FF3', Electric: '#F7D02C',
+    Bug: '#A6B91A', Ghost: '#735797', Dragon: '#6F35FC',
+    Psychic: '#F95587', None: '#ccc'
   };
   return colors[type] || '#68A090';
 };
 
-const PokemonListItem = ({ pokemon, navigation, isFavorite, onToggleFavorite }) => { 
+const PokemonListItem = ({ pokemon, navigation, isShiny, toggleShiny }) => {
   return (
-    <TouchableOpacity 
-      style={styles.listItem}
-      onPress={() => navigation.navigate('PokemonDetails', { pokemonData: pokemon })} 
+    <Pressable
+      onPress={() => navigation.navigate('PokemonDetails', { pokemon })}
+      style={styles.card}
     >
-      <View style={styles.infoArea}>
-          <View style={styles.textContainer}>
-            <Text style={styles.indexText}>#{pokemon.pokedex_index}</Text>
-            <Text style={styles.nameText}>
-              {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
-            </Text>
-          </View>
-          <View style={styles.tagContainer}>
-            <Text style={[styles.typeTag, { backgroundColor: getTypeColor(pokemon.type_1) }]}>
-              {pokemon.type_1}
-            </Text>
-            {pokemon.type_2 !== 'None' && (
-              <Text style={[styles.typeTag, { backgroundColor: getTypeColor(pokemon.type_2) }]}>
-                {pokemon.type_2}
-              </Text>
-            )}
-          </View>
-        </View>
-        
-        <TouchableOpacity 
-            onPress={onToggleFavorite} 
-            style={styles.favoriteButton}
-        >
-            <MaterialCommunityIcons 
-                name={isFavorite ? "star" : "star-outline"}
-                size={24} 
-                color={isFavorite ? "#FFD700" : "#A98FF3"}
-            />
-        </TouchableOpacity>
-    </TouchableOpacity>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.index}>#{pokemon.pokedex_index}</Text>
+        <Text style={styles.name}>
+          {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
+        </Text>
+        <Text style={[styles.type, { color: getTypeColor(pokemon.type_1) }]}>
+          {pokemon.type_2 === 'None'
+            ? pokemon.type_1
+            : `${pokemon.type_1} / ${pokemon.type_2}`}
+        </Text>
+      </View>
+
+      <Pressable onPress={toggleShiny}>
+        <MaterialCommunityIcons
+          name={isShiny ? 'star' : 'star-outline'}
+          size={28}
+          color={isShiny ? '#FFD700' : '#CCC'}
+        />
+      </Pressable>
+    </Pressable>
   );
 };
+
 const styles = StyleSheet.create({
-  listItem: {
+  card: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#fff',
-    padding: 15,
     borderRadius: 8,
-    marginBottom: 10,
-    borderLeftWidth: 5,
-    borderLeftColor: '#FF0000',
+    padding: 15,
+    marginBottom: 8,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
   },
-  infoArea: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flex: 1,
-  },
-  favoriteButton: {
-      paddingLeft: 10,
-  },
-  textContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    flexShrink: 1,
-  },
-  indexText: {
-    fontSize: 14,
-    color: '#888',
-    marginRight: 8,
-    fontWeight: '600'
-  },
-  nameText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#333'
-  },
-  tagContainer: {
-    flexDirection: 'row',
-    flexShrink: 0,
-    marginLeft: 10,
-  },
-  typeTag: {
-    fontSize: 10,
-    color: '#fff',
-    fontWeight: 'bold',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 10,
-    marginLeft: 5,
-    textTransform: 'uppercase'
-  },
+  index: { color: '#888', fontSize: 12, fontWeight: 'bold' },
+  name: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+  type: { fontSize: 12, fontWeight: '600', marginTop: 4 },
 });
 
 export default PokemonListItem;

@@ -1,124 +1,63 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TextInput, Text } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { POKEMON_DATA } from '../data/Pokemon';
-import Header from '../components/Header';
 import PokemonListItem from '../components/PokemonListItem';
 
-const PokemonContainer = ({ navigation, favoriteIndices, toggleFavorite }) => {
-  const [searchText, setSearchText] = useState('');
-  const [activeSort, setActiveSort] = useState({ type: 'name', asc: true }); // standaard naam A→Z
+const PokemonContainer = ({ navigation, shinyList, toggleShiny }) => {
+  const [search, setSearch] = useState('');
 
-  // Filter Pokémon op naam
-  const filteredPokemon = POKEMON_DATA.filter((pokemon) =>
-    pokemon.name.toLowerCase().includes(searchText.toLowerCase())
+  const filtered = POKEMON_DATA.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
   );
-
-  // Sorteer Pokémon
-  const sortedPokemon = [...filteredPokemon].sort((a, b) => {
-    if (activeSort.type === 'name') {
-      return activeSort.asc
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
-    } else {
-      return activeSort.asc
-        ? a.pokedex_index - b.pokedex_index
-        : b.pokedex_index - a.pokedex_index;
-    }
-  });
-
-  // Pijltjes symbolen
-  const arrow = (asc) => (asc ? '↑' : '↓');
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Text style={styles.title}>Pokémon Lijst</Text>
 
-      {/* Zoekbalk */}
       <TextInput
         style={styles.searchInput}
-        placeholder="Zoek op naam..."
-        value={searchText}
-        onChangeText={setSearchText}
-        autoCapitalize="none"
-        autoCorrect={false}
+        placeholder="Zoek Pokémon..."
+        value={search}
+        onChangeText={setSearch}
       />
 
-      {/* Sorteer knoppen */}
-      <View style={styles.sortContainer}>
-        {/* Naam knop */}
-        <TouchableOpacity
-          style={[
-            styles.sortButton,
-            activeSort.type === 'name' && { backgroundColor: '#FFCC00' },
-          ]}
-          onPress={() => setActiveSort({ type: 'name', asc: !activeSort.asc })}
-        >
-          <Text style={styles.sortText}>
-            Naam {activeSort.type === 'name' ? arrow(activeSort.asc) : '↑↓'}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Index knop */}
-        <TouchableOpacity
-          style={[
-            styles.sortButton,
-            activeSort.type === 'index' && { backgroundColor: '#FFCC00' },
-          ]}
-          onPress={() => setActiveSort({ type: 'index', asc: !activeSort.asc })}
-        >
-          <Text style={styles.sortText}>
-            Index {activeSort.type === 'index' ? arrow(activeSort.asc) : '↑↓'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Pokémon lijst */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {sortedPokemon.map((pokemon) => (
+      <FlashList
+        data={filtered}
+        renderItem={({ item }) => (
           <PokemonListItem
-            key={pokemon.pokedex_index}
-            pokemon={pokemon}
+            pokemon={item}
             navigation={navigation}
-            isFavorite={favoriteIndices.includes(pokemon.pokedex_index)}
-            onToggleFavorite={() => toggleFavorite(pokemon.pokedex_index)}
+            isShiny={shinyList.includes(item.pokedex_index)}
+            toggleShiny={() => toggleShiny(item.pokedex_index)}
           />
-        ))}
-      </ScrollView>
+        )}
+        estimatedItemSize={80}
+        keyExtractor={(item) => item.pokedex_index.toString()}
+        contentContainerStyle={{ padding: 10 }}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f0f0f0' },
+  container: { flex: 1, backgroundColor: '#f9f9f9' },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 50,
+    textAlign: 'center',
+  },
   searchInput: {
-    height: 45,
-    margin: 15,
-    marginBottom: 5,
+    height: 40,
+    margin: 10,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 10,
     backgroundColor: '#fff',
-    fontSize: 16,
+    paddingHorizontal: 10,
   },
-  sortContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 15,
-    marginBottom: 10,
-  },
-  sortButton: {
-    flex: 1,
-    marginHorizontal: 5,
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-    backgroundColor: '#fff', // standaard wit
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  sortText: { fontSize: 14, fontWeight: 'bold', color: '#333' },
-  scrollContent: { padding: 15, paddingTop: 0 },
 });
 
 export default PokemonContainer;
