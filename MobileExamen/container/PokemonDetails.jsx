@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 
 const getTypeColor = (type) => {
@@ -26,8 +26,15 @@ const Row = ({ label, value, chipColor }) => (
 );
 
 const PokemonDetails = ({ route }) => {
-  // We verwachten dat je nav doet met: navigation.navigate('PokemonDetails', { pokemonData: pokemon })
   const pokemon = route?.params?.pokemonData;
+
+  // 🔹 Lifecycle logging
+  useEffect(() => {
+    console.log('✅ Mounted PokemonDetails');
+    return () => {
+      console.log('❌ Unmounted PokemonDetails');
+    };
+  }, []);
 
   if (!pokemon) {
     return (
