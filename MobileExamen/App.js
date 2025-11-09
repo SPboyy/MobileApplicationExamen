@@ -1,39 +1,74 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import PokemonContainer from './container/PokemonContainer';
-import PokemonDetails from './container/PokemonDetails';
-import ProfileContainer from './container/ProfileContainer';
+import PokemonContainer from './container/PokemonContainer';   // ✅ aangepast pad
+import ProfileContainer from './container/ProfileContainer';   // ✅ aangepast pad
+import PokemonDetailsScreen from './container/PokemonDetails'; // ✅ aangepast pad
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const HomeStack = ({ shinyList, toggleShiny }) => (
+// 🔹 Stack navigator (Home → Details)
+const HomeStackNavigator = ({ shinyList, toggleShiny, setTotalCount }) => (
   <Stack.Navigator>
-    <Stack.Screen
-      name="PokemonList"
-      options={{ headerShown: false }}
-    >
+    <Stack.Screen name="PokemonList" options={{ headerShown: false }}>
       {(props) => (
-        <PokemonContainer {...props} shinyList={shinyList} toggleShiny={toggleShiny} />
+        <PokemonContainer
+          {...props}
+          shinyList={shinyList}
+          toggleShiny={toggleShiny}
+          setTotalCount={setTotalCount}
+        />
       )}
     </Stack.Screen>
 
     <Stack.Screen
       name="PokemonDetails"
-      component={PokemonDetails}
+      component={PokemonDetailsScreen}
       options={({ route }) => ({
-        title: route.params?.pokemon?.name.toUpperCase() || 'Details',
+        title: route.params?.pokemonData?.name?.toUpperCase() || 'DETAILS',
+        headerShown: true,
       })}
     />
   </Stack.Navigator>
 );
 
+// 🔹 Tabs (Home + Profile)
+const TabsComponent = ({ shinyList, toggleShiny, totalCount, setTotalCount }) => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarActiveTintColor: '#FF0000',
+      tabBarInactiveTintColor: 'gray',
+      headerShown: false,
+      tabBarIcon: ({ color, size }) => {
+        const icon = route.name === 'Home' ? 'pokeball' : 'account-circle';
+        return <MaterialCommunityIcons name={icon} size={size} color={color} />;
+      },
+    })}
+  >
+    <Tab.Screen name="Home" options={{ title: 'Lijst' }}>
+      {() => (
+        <HomeStackNavigator
+          shinyList={shinyList}
+          toggleShiny={toggleShiny}
+          setTotalCount={setTotalCount}
+        />
+      )}
+    </Tab.Screen>
+
+    <Tab.Screen name="Profile" options={{ title: 'Profiel' }}>
+      {() => <ProfileContainer shinyCount={shinyList.length} totalCount={totalCount} />}
+    </Tab.Screen>
+  </Tab.Navigator>
+);
+
+// 🔹 Root app
 export default function App() {
-  const [shinyList, setShinyList] = useState([]);
+  const [shinyList, setShinyList] = React.useState([]);
+  const [totalCount, setTotalCount] = React.useState(0);
 
   const toggleShiny = (index) => {
     setShinyList((prev) =>
@@ -45,25 +80,12 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          headerShown: false,
-          tabBarActiveTintColor: '#FF0000',
-          tabBarInactiveTintColor: 'gray',
-          tabBarIcon: ({ color, size }) => {
-            const icon = route.name === 'Home' ? 'pokeball' : 'account-circle';
-            return <MaterialCommunityIcons name={icon} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen name="Home">
-          {() => <HomeStack shinyList={shinyList} toggleShiny={toggleShiny} />}
-        </Tab.Screen>
-
-        <Tab.Screen name="Profiel">
-          {() => <ProfileContainer shinyCount={shinyList.length} />}
-        </Tab.Screen>
-      </Tab.Navigator>
+      <TabsComponent
+        shinyList={shinyList}
+        toggleShiny={toggleShiny}
+        totalCount={totalCount}
+        setTotalCount={setTotalCount}
+      />
     </NavigationContainer>
   );
 }

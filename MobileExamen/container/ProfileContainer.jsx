@@ -1,44 +1,91 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { POKEMON_DATA } from '../data/Pokemon';
+import { PROFILE_DATA } from '../data/Profile';
 
 const ProfileContainer = ({ shinyCount }) => {
-  return (
-    <View style={styles.container}>
-      <MaterialCommunityIcons name="pokeball" size={80} color="#FF0000" />
-      <Text style={styles.name}>SPboyy</Text>
-      <Text style={styles.subtitle}>Trainer sinds 2023</Text>
+  const totalCount = 1025; // ✅ vaste waarde
 
-      <View style={styles.box}>
-        <Text style={styles.label}>Aantal Shiny Pokémon:</Text>
-        <Text style={styles.count}>
-          {shinyCount} / {POKEMON_DATA.length}
+  return (
+    <View style={styles.profileContainer}>
+      <MaterialCommunityIcons
+        name="pokeball"
+        size={80}
+        color="#FF0000"
+        style={styles.pokeballIcon}
+      />
+
+      <Text style={styles.playerNameHeader}>{PROFILE_DATA.playerName}</Text>
+      <Text style={styles.subHeader}>Trainer sinds {PROFILE_DATA.trainerSince}</Text>
+
+      <View style={styles.shinyBox}>
+        <Text style={styles.label}>Aantal Shinys:</Text>
+        <Text style={styles.shinyCount}>
+          {shinyCount} / {totalCount}
         </Text>
       </View>
+
+      <Text style={styles.footer}>Pokédex totaal: {totalCount} Pokémon</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  profileContainer: {
     flex: 1,
     backgroundColor: '#fff',
+    padding: 20,
     alignItems: 'center',
-    paddingTop: 80,
   },
-  name: { fontSize: 28, fontWeight: '900', color: '#FF0000', marginTop: 10 },
-  subtitle: { fontSize: 16, color: '#888', marginBottom: 40 },
-  box: {
+  pokeballIcon: {
+    marginTop: 60,
+    marginBottom: 20,
+  },
+  playerNameHeader: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#FF0000',
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    borderBottomWidth: 4,
+    borderBottomColor: '#FFCC00',
+    paddingBottom: 5,
+  },
+  subHeader: {
+    fontSize: 18,
+    color: '#888',
+    marginBottom: 30,
+    fontWeight: '600',
+  },
+  shinyBox: {
+    width: '80%',
     alignItems: 'center',
+    padding: 20,
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
-    padding: 20,
     borderWidth: 1,
     borderColor: '#eee',
+    marginBottom: 30,
   },
-  label: { fontSize: 16, color: '#666', fontWeight: 'bold' },
-  count: { fontSize: 36, fontWeight: 'bold', color: '#FFD700', marginTop: 5 },
+  label: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  shinyCount: {
+    fontSize: 48,
+    fontWeight: '900',
+    color: '#FFD700',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  footer: {
+    fontSize: 16,
+    color: '#555',
+    fontWeight: '600',
+  },
 });
 
 export default ProfileContainer;

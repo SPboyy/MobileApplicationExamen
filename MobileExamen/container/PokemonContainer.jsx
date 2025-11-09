@@ -1,25 +1,82 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { POKEMON_DATA } from '../data/Pokemon';
+import Header from '../components/Header';
 import PokemonListItem from '../components/PokemonListItem';
 
-const PokemonContainer = ({ navigation, shinyList, toggleShiny }) => {
-  const [search, setSearch] = useState('');
-  const [sortType, setSortType] = useState('name'); // 'name' of 'index'
-  const [asc, setAsc] = useState(true); // true = oplopend, false = aflopend
+const PAGE_SIZE = 20;
 
-  // Filter Pokémon
-  const filtered = POKEMON_DATA.filter((p) =>
+const PokemonContainer = ({ navigation, shinyList, toggleShiny }) => {
+  const [pokemons, setPokemons] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [search, setSearch] = useState('');
+  const [sortType, setSortType] = useState('name');
+  const [asc, setAsc] = useState(true);
+
+  // 🔹 Functie om volgende 20 Pokémon op te halen
+  const fetchPokemonPage = useCallback(() => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    fetch(`https://pokeapi.co/api/v2/pokemon?limit=${PAGE_SIZE}&offset=${offset}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.results.length) {
+          setHasMore(false);
+          setLoading(false);
+          return;
+        }
+
+        // 🔹 Gebruik Promise.all om details op te halen
+        return Promise.all(
+          data.results.map((pokemon) =>
+            fetch(pokemon.url)
+              .then((res) => res.json())
+              .then((details) => ({
+                pokedex_index: details.id,
+                name: details.name,
+                type_1: details.types[0]?.type?.name || 'Unknown',
+                type_2: details.types[1]?.type?.name || 'None',
+                image: details.sprites.front_default,
+                description: `Een ${details.types[0]?.type?.name}-type Pokémon.`,
+              }))
+          )
+        );
+      })
+      .then((newPokemons) => {
+        if (!newPokemons) return;
+        setPokemons((prev) => [...prev, ...newPokemons]);
+        setOffset((prev) => prev + PAGE_SIZE);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('❌ Fout bij ophalen Pokémon:', err);
+        setLoading(false);
+      });
+  }, [offset, loading, hasMore]);
+
+  // 🔹 Laad eerste batch bij opstart
+  useEffect(() => {
+    fetchPokemonPage();
+  }, []);
+
+  // 🔹 Filter & sorteer
+  const filtered = pokemons.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Sorteer Pokémon
   const sorted = [...filtered].sort((a, b) => {
     if (sortType === 'name') {
-      return asc
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
+      return asc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
     } else {
       return asc
         ? a.pokedex_index - b.pokedex_index
@@ -27,14 +84,12 @@ const PokemonContainer = ({ navigation, shinyList, toggleShiny }) => {
     }
   });
 
-  // Hulpfunctie voor pijltje
   const arrow = asc ? '↑' : '↓';
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pokémon Lijst</Text>
+      <Header />
 
-      {/* Zoekveld */}
       <TextInput
         style={styles.searchInput}
         placeholder="Zoek Pokémon..."
@@ -42,7 +97,7 @@ const PokemonContainer = ({ navigation, shinyList, toggleShiny }) => {
         onChangeText={setSearch}
       />
 
-      {/* Sorteerknoppen */}
+      {/* 🔹 Sorteerknoppen */}
       <View style={styles.sortContainer}>
         <TouchableOpacity
           style={[
@@ -81,20 +136,29 @@ const PokemonContainer = ({ navigation, shinyList, toggleShiny }) => {
         </TouchableOpacity>
       </View>
 
-      {/* FlashList */}
+      {/* 🔹 FlashList met infinite scroll */}
       <FlashList
         data={sorted}
         renderItem={({ item }) => (
           <PokemonListItem
             pokemon={item}
             navigation={navigation}
-            isShiny={shinyList.includes(item.pokedex_index)}
-            toggleShiny={() => toggleShiny(item.pokedex_index)}
+            isShiny={shinyList?.includes(item.pokedex_index)}
+            toggleShiny={() => toggleShiny?.(item.pokedex_index)}
           />
         )}
-        estimatedItemSize={80}
         keyExtractor={(item) => item.pokedex_index.toString()}
+        estimatedItemSize={90}
         contentContainerStyle={{ padding: 10 }}
+        onEndReached={fetchPokemonPage}
+        onEndReachedThreshold={0.4}
+        ListFooterComponent={
+          loading ? (
+            <View style={{ padding: 20 }}>
+              <ActivityIndicator size="small" color="#FF0000" />
+            </View>
+          ) : null
+        }
       />
     </View>
   );
@@ -102,13 +166,6 @@ const PokemonContainer = ({ navigation, shinyList, toggleShiny }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9f9' },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 50,
-    textAlign: 'center',
-  },
   searchInput: {
     height: 40,
     margin: 10,
